@@ -11,8 +11,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.sql.SqlUtil;
+import com.ruoyi.framework.security.LoginUser;
 import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.framework.web.page.PageDomain;
 import com.ruoyi.framework.web.page.TableDataInfo;
@@ -25,7 +27,7 @@ import com.ruoyi.framework.web.page.TableSupport;
  */
 public class BaseController
 {
-    protected final Logger logger = LoggerFactory.getLogger(BaseController.class);
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * 将前台传递过来的日期格式的字符串，自动转化为Date类型
@@ -60,6 +62,19 @@ public class BaseController
     }
 
     /**
+     * 设置请求排序数据
+     */
+    protected void startOrderBy()
+    {
+        PageDomain pageDomain = TableSupport.buildPageRequest();
+        if (StringUtils.isNotEmpty(pageDomain.getOrderBy()))
+        {
+            String orderBy = SqlUtil.escapeOrderBySql(pageDomain.getOrderBy());
+            PageHelper.orderBy(orderBy);
+        }
+    }
+
+    /**
      * 响应请求分页数据
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -74,6 +89,38 @@ public class BaseController
     }
 
     /**
+     * 返回成功
+     */
+    public AjaxResult success()
+    {
+        return AjaxResult.success();
+    }
+
+    /**
+     * 返回失败消息
+     */
+    public AjaxResult error()
+    {
+        return AjaxResult.error();
+    }
+
+    /**
+     * 返回成功消息
+     */
+    public AjaxResult success(String message)
+    {
+        return AjaxResult.success(message);
+    }
+
+    /**
+     * 返回失败消息
+     */
+    public AjaxResult error(String message)
+    {
+        return AjaxResult.error(message);
+    }
+
+    /**
      * 响应返回结果
      * 
      * @param rows 影响行数
@@ -82,5 +129,48 @@ public class BaseController
     protected AjaxResult toAjax(int rows)
     {
         return rows > 0 ? AjaxResult.success() : AjaxResult.error();
+    }
+
+    /**
+     * 响应返回结果
+     * 
+     * @param result 结果
+     * @return 操作结果
+     */
+    protected AjaxResult toAjax(boolean result)
+    {
+        return result ? success() : error();
+    }
+
+    /**
+     * 获取用户缓存信息
+     */
+    public LoginUser getLoginUser()
+    {
+        return SecurityUtils.getLoginUser();
+    }
+
+    /**
+     * 获取登录用户id
+     */
+    public Long getUserId()
+    {
+        return getLoginUser().getUserId();
+    }
+
+    /**
+     * 获取登录部门id
+     */
+    public Long getDeptId()
+    {
+        return getLoginUser().getDeptId();
+    }
+
+    /**
+     * 获取登录用户名
+     */
+    public String getUsername()
+    {
+        return getLoginUser().getUsername();
     }
 }

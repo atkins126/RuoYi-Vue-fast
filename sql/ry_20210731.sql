@@ -52,7 +52,7 @@ create table sys_user (
   password          varchar(100)    default ''                 comment '密码',
   status            char(1)         default '0'                comment '帐号状态（0正常 1停用）',
   del_flag          char(1)         default '0'                comment '删除标志（0代表存在 2代表删除）',
-  login_ip          varchar(50)     default ''                 comment '最后登录IP',
+  login_ip          varchar(128)    default ''                 comment '最后登录IP',
   login_date        datetime                                   comment '最后登录时间',
   create_by         varchar(64)     default ''                 comment '创建者',
   create_time       datetime                                   comment '创建时间',
@@ -421,7 +421,7 @@ create table sys_oper_log (
   oper_name         varchar(50)     default ''                 comment '操作人员',
   dept_name         varchar(50)     default ''                 comment '部门名称',
   oper_url          varchar(255)    default ''                 comment '请求URL',
-  oper_ip           varchar(50)     default ''                 comment '主机地址',
+  oper_ip           varchar(128)    default ''                 comment '主机地址',
   oper_location     varchar(255)    default ''                 comment '操作地点',
   oper_param        varchar(2000)   default ''                 comment '请求参数',
   json_result       varchar(2000)   default ''                 comment '返回参数',
@@ -534,9 +534,11 @@ create table sys_config (
   primary key (config_id)
 ) engine=innodb auto_increment=100 comment = '参数配置表';
 
-insert into sys_config values(1, '主框架页-默认皮肤样式名称', 'sys.index.skinName',     'skin-blue',     'Y', 'admin', sysdate(), '', null, '蓝色 skin-blue、绿色 skin-green、紫色 skin-purple、红色 skin-red、黄色 skin-yellow' );
-insert into sys_config values(2, '用户管理-账号初始密码',     'sys.user.initPassword',  '123456',        'Y', 'admin', sysdate(), '', null, '初始化密码 123456' );
-insert into sys_config values(3, '主框架页-侧边栏主题',       'sys.index.sideTheme',    'theme-dark',    'Y', 'admin', sysdate(), '', null, '深色主题theme-dark，浅色主题theme-light' );
+insert into sys_config values(1, '主框架页-默认皮肤样式名称',     'sys.index.skinName',            'skin-blue',     'Y', 'admin', sysdate(), '', null, '蓝色 skin-blue、绿色 skin-green、紫色 skin-purple、红色 skin-red、黄色 skin-yellow' );
+insert into sys_config values(2, '用户管理-账号初始密码',         'sys.user.initPassword',         '123456',        'Y', 'admin', sysdate(), '', null, '初始化密码 123456' );
+insert into sys_config values(3, '主框架页-侧边栏主题',           'sys.index.sideTheme',           'theme-dark',    'Y', 'admin', sysdate(), '', null, '深色主题theme-dark，浅色主题theme-light' );
+insert into sys_config values(4, '账号自助-验证码开关',           'sys.account.captchaOnOff',      'true',          'Y', 'admin', sysdate(), '', null, '是否开启验证码功能（true开启，false关闭）');
+insert into sys_config values(5, '账号自助-是否开启用户注册功能', 'sys.account.registerUser',      'false',         'Y', 'admin', sysdate(), '', null, '是否开启注册用户功能（true开启，false关闭）');
 
 
 -- ----------------------------
@@ -546,7 +548,7 @@ drop table if exists sys_logininfor;
 create table sys_logininfor (
   info_id        bigint(20)     not null auto_increment   comment '访问ID',
   user_name      varchar(50)    default ''                comment '用户账号',
-  ipaddr         varchar(50)    default ''                comment '登录IP地址',
+  ipaddr         varchar(128)   default ''                comment '登录IP地址',
   login_location varchar(255)   default ''                comment '登录地点',
   browser        varchar(50)    default ''                comment '浏览器类型',
   os             varchar(50)    default ''                comment '操作系统',

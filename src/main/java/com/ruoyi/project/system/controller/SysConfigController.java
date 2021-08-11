@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.constant.UserConstants;
-import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.aspectj.lang.annotation.Log;
 import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
@@ -88,7 +87,7 @@ public class SysConfigController extends BaseController
         {
             return AjaxResult.error("新增参数'" + config.getConfigName() + "'失败，参数键名已存在");
         }
-        config.setCreateBy(SecurityUtils.getUsername());
+        config.setCreateBy(getUsername());
         return toAjax(configService.insertConfig(config));
     }
 
@@ -104,7 +103,7 @@ public class SysConfigController extends BaseController
         {
             return AjaxResult.error("修改参数'" + config.getConfigName() + "'失败，参数键名已存在");
         }
-        config.setUpdateBy(SecurityUtils.getUsername());
+        config.setUpdateBy(getUsername());
         return toAjax(configService.updateConfig(config));
     }
 
@@ -116,18 +115,19 @@ public class SysConfigController extends BaseController
     @DeleteMapping("/{configIds}")
     public AjaxResult remove(@PathVariable Long[] configIds)
     {
-        return toAjax(configService.deleteConfigByIds(configIds));
+        configService.deleteConfigByIds(configIds);
+        return success();
     }
 
     /**
-     * 清空缓存
+     * 刷新参数缓存
      */
     @PreAuthorize("@ss.hasPermi('system:config:remove')")
     @Log(title = "参数管理", businessType = BusinessType.CLEAN)
-    @DeleteMapping("/clearCache")
-    public AjaxResult clearCache()
+    @DeleteMapping("/refreshCache")
+    public AjaxResult refreshCache()
     {
-        configService.clearCache();
+        configService.resetConfigCache();
         return AjaxResult.success();
     }
 }
